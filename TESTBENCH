@@ -1,0 +1,91 @@
+module fifo_16x8_tb;
+
+    // Testbench signals
+    reg clk;
+    reg rst;
+    reg wr_en;
+    reg rd_en;
+    reg [7:0] data_in;
+    wire [7:0] data_out;
+    wire full;
+    wire empty;
+    reg [7:0] captured_output; // To store output for final display
+
+    // Instantiate the FIFO
+    fifo_16x8 uut (
+        .clk(clk),
+        .rst(rst),
+        .wr_en(wr_en),
+        .rd_en(rd_en),
+        .data_in(data_in),
+        .data_out(data_out),
+        .full(full),
+        .empty(empty)
+    );
+
+    // Clock generation
+    initial begin
+        clk = 0;
+        forever #5 clk = ~clk; // 100MHz clock (10ns period)
+    end
+
+    // VCD file generation
+    initial begin
+        $dumpfile("fifo_16x8_tb.vcd"); // Output VCD file
+        $dumpvars(0, fifo_16x8_tb);    // Dump all variables in the testbench
+    end
+
+    // Test stimulus
+    initial begin
+        // Initialize signals
+        rst = 1;
+        wr_en = 0;
+        rd_en = 0;
+        data_in = 8'h59; // Input data: 01011001
+        captured_output = 0;
+
+        // Reset the FIFO
+        #20;
+        rst = 0;
+
+        // Write data to FIFO
+        @(posedge clk);
+        wr_en = 1;
+        #10;
+        wr_en = 0;
+
+        // Wait for a cycle
+        #10;
+
+        // Read data from FIFO
+        @(posedge clk);
+        rd_en = 1;
+        #10;
+        rd_en = 0;
+
+        // Capture output
+        @(posedge clk);
+        captured_output = data_out;
+
+        // Display input and output
+        #10;
+        $display("Test Result:");
+        $display("Input  Data: %b (8'h%h)", data_in, data_in);
+        $display("Output Data: %b (8'h%h)", captured_output, captured_output);
+        if (captured_output == data_in)
+            $display("Test Passed: Output matches input");
+        else
+            $display("Test Failed: Output does not match input");
+
+        // End simulation
+        #20;
+        $finish;
+    end
+
+    // Monitor
+    initial begin
+        $monitor("Time=%0t rst=%b wr_en=%b rd_en=%b data_in=%h data_out=%h full=%b empty=%b",
+                 $time, rst, wr_en, rd_en, data_in, data_out, full, empty);
+    end
+
+endmodule
