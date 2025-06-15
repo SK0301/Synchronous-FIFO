@@ -79,11 +79,13 @@ endmodule  <br>
 >> After data has written, when rd_en is high and empty is zero, read operation is done  <br>
 
 # Waveform Results: 
-<p align="center">
-  <img src="https://github.com/user-attachments/assets/8c5e8b93-83aa-4eb1-8f43-6d77f914be53" width="350"/>
-</p>
+![image](https://github.com/user-attachments/assets/8c5e8b93-83aa-4eb1-8f43-6d77f914be53)
 
 We can observe that when empty is high and rd_en is high, data_out is capturing, here the catch is when rd_en is high and empty is low, then only data is captured, but it will be captured after the clock signal arrives, so empty being in high doesn't make any error   <br>
 
+# Applications of FIFO:
+1. Used when there is Data Buffering between the modules <br>
+2. Used in Clock Domain Crossing
+3. Used in Pipeline Synchronization
 
 
